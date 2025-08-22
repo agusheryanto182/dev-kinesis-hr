@@ -11,17 +11,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MoreVertical } from 'lucide-react';
-import { ApplicantResponseDTO } from '@/types/applicant';
+import { Badge } from '@/components/ui/badge';
 import { DataTableColumnHeader } from '../data-table/data-table-column-header';
 import { formatDate } from '@/utils/format-date';
 import { toast } from 'sonner';
 import { applicationRepository } from '@/repositories/application-repository';
 import { DeleteAlert } from '../delete-alert';
 import { formatSingleSalary } from '@/utils/format-salary/format-salary';
+import { ApplicationTableData } from '../application-table/application-table';
 
-type CandidateData = ApplicantResponseDTO;
 
-export const GetCandidatesTableColumns = (onDelete: () => void): ColumnDef<CandidateData>[] => {
+type CandidateData = any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplication?: (data: ApplicationTableData) => void): ColumnDef<CandidateData>[] => {
   const handleDelete = async (id: number) => {
     try {
       await applicationRepository.deleteApplication(id);
@@ -63,7 +65,7 @@ export const GetCandidatesTableColumns = (onDelete: () => void): ColumnDef<Candi
       cell: ({ row }) => (
         <>
           <Link
-            href={`/hiring/candidates/${row.original.id}`}
+            href={`/hiring/candidates/${row.original.applicantId}`}
             className="font-medium hover:underline cursor-pointer hover:text-blue-500"
           >
             {row.original.fullName}
@@ -91,17 +93,33 @@ export const GetCandidatesTableColumns = (onDelete: () => void): ColumnDef<Candi
     {
       accessorKey: 'score',
       header: 'Score',
-      cell: ({ }) => <div className="text-muted-foreground">{'N/A'}</div>,
+      cell: ({ row }) => <div className="text-muted-foreground">{row.original.screening?.matchPercentage ? row.original.screening?.matchPercentage + '%' : '-'}</div>,
     },
     {
-      accessorKey: 'skillMatch',
+      accessorKey: 'accurateKeywords',
       header: 'Skill Match',
-      cell: ({ }) => <div className="text-muted-foreground">{'N/A'}</div>,
+      cell: ({ row }) => <div className="space-y-2">
+        <div className="flex flex-wrap gap-1">
+          {row.original?.screening?.accurateKeywords.slice(0, 2).map((skill: string) => (
+            <Badge
+              key={skill}
+              className="text-xs bg-green-100 text-green-800"
+            >
+              {skill}
+            </Badge>
+          ))}
+          {row.original?.screening?.accurateKeywords.length > 2 && (
+            <Badge className="text-xs">
+              +{row.original?.screening?.accurateKeywords.length - 2}
+            </Badge>
+          )}
+        </div>
+      </div>,
     },
     {
       accessorKey: 'yearOfExperience',
       header: 'Year of Experience',
-      cell: ({ row }) => <div className="text-muted-foreground">1 year bro</div>,
+      cell: ({ row }) => <div className="text-muted-foreground">{row.original.yearOfExperience > 0 ? row.original.yearOfExperience : '-'}</div>,
     },
     {
       accessorKey: 'location',
@@ -157,11 +175,16 @@ export const GetCandidatesTableColumns = (onDelete: () => void): ColumnDef<Candi
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
-              <Link href={`/hiring/candidates/${row.original.id}`} className="cursor-pointer">
+              <Link href={`/hiring/candidates/${row.original.applicantId}`} className="cursor-pointer">
                 View Details
               </Link>
             </DropdownMenuItem>
-            {/* <DropdownMenuItem className="cursor-pointer">Edit Candidate</DropdownMenuItem> */}
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => onEditApplication?.(row.original as unknown as ApplicationTableData)}
+            >
+              Edit Application
+            </DropdownMenuItem>
             <DeleteAlert
               title="Delete Candidate"
               description={`Are you sure you want to delete "${row.original.fullName}"? This action cannot be undone.`}

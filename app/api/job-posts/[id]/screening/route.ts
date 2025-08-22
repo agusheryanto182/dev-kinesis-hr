@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { geminiAI } from "@/lib/gemini"
+import { geminiAI } from '@/lib/gemini';
 import { Type } from '@google/genai';
-import fs from "fs/promises";
+import fs from 'fs/promises';
 
 const genPrompt = (jobDesc: string, cvText: string, customRequirement: object) => `
 You are an ATS evaluator.
@@ -29,114 +29,108 @@ Additional Custom Requirements (from recruiter):
 ${JSON.stringify(customRequirement, null, 2)}
 `;
 
-export async function POST(
-    req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params;
-        const body = await req.json();
-        const { application_id, custom_requirement } = body;
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const { application_id, custom_requirement } = body;
 
-        // ambil job desc dari prisma
-        const jobPost = await prisma.jobPost.findUnique({
-            where: { id: parseInt(id) },
-            select: { description: true },
-        });
+    // ambil job desc dari prisma
+    const jobPost = await prisma.jobPost.findUnique({
+      where: { id: parseInt(id) },
+      select: { description: true },
+    });
 
-        if (!jobPost) {
-            return NextResponse.json(
-                { error: "Job post not found" },
-                { status: 404 }
-            );
-        }
-
-        // ambil CV text dari prisma
-        const application = await prisma.application.findUnique({
-            where: { id: application_id },
-            include: {
-                documents: {
-                    include: {
-                        document: true,
-                    }
-                }
-            }
-        });
-
-        if (!application) {
-            return NextResponse.json(
-                { error: "Application not found" },
-                { status: 404 }
-            );
-        }
-
-        if (application.documents.length > 0) {
-            if (application.documents[0].document.localPath) {
-                const localPath = application.documents[0].document.localPath;
-                const cvText = await fs.readFile(localPath, "utf-8");
-
-                const prompt = genPrompt(
-                    jobPost.description,
-                    cvText,
-                    custom_requirement
-                );
-
-                const result = await geminiAI.models.generateContent({
-                    model: "gemini-1.5-flash",
-                    contents: prompt,
-                    config: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: Type.OBJECT,
-                            properties: {
-                                matchPercentage: {
-                                    type: Type.NUMBER,
-                                },
-                                missingKeywords: {
-                                    type: Type.ARRAY,
-                                    items: {
-                                        type: Type.STRING,
-                                    },
-                                },
-                                accurateKeywords: {
-                                    type: Type.ARRAY,
-                                    items: {
-                                        type: Type.STRING,
-                                    },
-                                },
-                                finalThoughts: {
-                                    type: Type.STRING,
-                                },
-                                recommendations: {
-                                    type: Type.STRING,
-                                },
-                            },
-                        },
-                    },
-                });
-
-                if (result.text) {
-                    const responseJson = JSON.parse(result.text)
-
-                    return NextResponse.json({
-                        success: true,
-                        data: responseJson,
-                    });
-                }
-                console.log(result)
-            }
-        }
-
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
-
-    } catch (error) {
-        console.error("Error in /api/job-posts:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+    if (!jobPost) {
+      return NextResponse.json({ error: 'Job post not found' }, { status: 404 });
     }
+
+    // ambil CV text dari prisma
+    const application = await prisma.application.findUnique({
+      where: { id: application_id },
+      include: {
+        documents: {
+          include: {
+            document: true,
+          },
+        },
+      },
+    });
+
+    if (!application) {
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
+    }
+
+    if (application.documents.length > 0) {
+      if (application.documents[0].document.localPath) {
+        const localPath = application.documents[0].document.localPath;
+        if (!localPath) {
+          return NextResponse.json({
+            success: true,
+            data: null,
+          });
+        }
+        const cvText = await fs.readFile(localPath, 'utf-8');
+
+        const prompt = genPrompt(jobPost.description, cvText, custom_requirement);
+
+        const result = await geminiAI.models.generateContent({
+          model: 'gemini-1.5-flash',
+          contents: prompt,
+          config: {
+            temperature: 0,
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                matchPercentage: {
+                  type: Type.NUMBER,
+                },
+                missingKeywords: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.STRING,
+                  },
+                },
+                accurateKeywords: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.STRING,
+                  },
+                },
+                finalThoughts: {
+                  type: Type.STRING,
+                },
+                recommendations: {
+                  type: Type.STRING,
+                },
+              },
+            },
+          },
+        });
+
+        if (result.text) {
+          const responseJson = JSON.parse(result.text);
+
+          return NextResponse.json({
+            success: true,
+            data: responseJson,
+          });
+        }
+        return NextResponse.json({
+          success: true,
+          data: null,
+        });
+      }
+      return NextResponse.json({
+        success: true,
+        data: null,
+      });
+    }
+
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error) {
+    console.error('Error in /api/job-posts:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }

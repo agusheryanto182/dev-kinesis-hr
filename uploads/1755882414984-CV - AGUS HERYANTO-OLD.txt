@@ -1,0 +1,89 @@
+
+
+Agus Heryanto 
++6288983633227 | agusheryanto.business@gmail.com | agusheryanto.me 
+Sleman, Daerah Istimewa Yogyakarta 55282 
+ 
+BACKEND DEVELOPER 
+ 
+A Backend Developer with experience in developing applications using technologies such 
+Golang, Node.js and Laravel. Skilled in designing and managing databases with MySQL, 
+PostgreSQL, and MongoDB. Expertise in developing RESTful APIs, payment systems, and 
+third-party integrations. Focused on delivering high-quality and scalable code with a strong 
+problem-solving mindset. 
+ 
+EDUCATION 
+ 
+University of Amikom Yogyakarta Yogyakarta 
+Undergraduate Informatics Student Sep 2022 - Present 
+● GPA: 3.91/4.00 (Current) 
+● Relevant Courses : Algorithms, Artificial Intelligence, Database Programming, Operating 
+Systems and Web Programming 
+ 
+EXPERIENCE 
+ 
+Yayasan Adipurna Inovasi Asia (Vocasia) Jakarta Selatan 
+Full Stack Developer Sep 2024 - Des 2024 
+● Completed a full stack developer bootcamp covering HTML, CSS, JavaScript, React.js, 
+Express.js, Node.js, and MongoDB. 
+● Led a team in the development of an Item Tracker project for tracking lost or reported 
+items. Implemented key features such as OTP authentication, push notifications via web 
+and Gmail, and deployed the application on a VPS. 
+● Set up Continuous Integration/Continuous Deployment (CI/CD) using GitHub Actions to 
+automate deployment processes. 
+● Engaged in live coding challenges, problem-solving, and weekly assignments to sharpen 
+technical skills. 
+ 
+PT. Wesclic Indonesia Neotech Yogyakarta 
+Web Developer Intern Aug 2024 - Nov 2024 
+● Lead Developer for the CSM Cargo project, overseeing the development of a web 
+application using Laravel and MySQL for a logistics platform. 
+● Translating Figma designs into functional and responsive web pages. 
+● Built server-side logic for handling form submissions and data processing through 
+Laravel controllers and Blade templates. 
+● Collaborated with teams during daily scrums to align the project with business goals and 
+deadlines, ensuring timely delivery and high-quality results. 
+ 
+
+ProjectSprint Yogyakarta 
+Backend Developer Mei 2024 - Jun 2024  
+● Designed and developed RESTful APIs using Golang to meet project specifications, 
+ensuring scalable and maintainable backend services. 
+● Implemented performance optimizations to improve response times and resource 
+efficiency, resulting in enhanced system performance under high load. 
+● Conducted load and stress testing on the developed backend services using K6, 
+identifying potential bottlenecks and improving system reliability. 
+● Applied best practices in error handling and logging to ensure robustness and 
+maintainability of the backend services. 
+ 
+PROJECTS 
+ 
+● ITEM TRACKER  
+A digital platform for reporting and tracking lost items. Key features include user 
+registration, OTP authentication, item reporting with photos, comment interaction, 
+search/filter by name or location, and notification delivery via web and Gmail. Admins 
+verify reports to ensure transparency and reliability. Built with a focus on user-friendly 
+design and scalable architecture. 
+Technologies: React.js, Node.js, Express.js and MongoDB. 
+Demo: https://itemtracker.vocasia-fsjs-c.fun 
+● MENHEAL DETECTOR 
+is an innovative web platform that offers essential features designed to support mental 
+well-being. The platform includes a mental health assessment test, daily mood tracking, 
+and consultations with available consultants. 
+Technologies: Typescript, Next.js and MongoDB. 
+Demo: https://healthymindrespati.my.id 
+ 
+TECHNICAL SKILLS 
+ 
+● Programming Languages: Golang, Javascript, Typescript, PHP and SQL. 
+● Frameworks: Gin, Echo, Fiber, React.js, Vue.js, Next.js, Tailwind CSS, Bootstrap, 
+Express.js, Nest.js and Laravel. 
+● Databases: MySQL, PostgreSQL, MongoDB and Redis. 
+● Developer Tools: Docker, Git, Github, Linux and AWS EC2. 
+● Specialities: Web Development, Backend Development, Frontend Development, System 
+and Database Design. 
+ 
+ACHIEVEMENTS 
+ 
+● Top 3 Backend Nominees - Hacktalents Event 2024 
+● Best Mentee Award Recipient - MSIB Full Stack Web Development Vocasia 2024 

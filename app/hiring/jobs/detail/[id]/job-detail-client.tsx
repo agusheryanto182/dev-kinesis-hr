@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import * as React from 'react';
@@ -30,6 +31,7 @@ import {
 import { handleMutation as handleHiringMutation } from '@/utils/mutation/mutation';
 import { JobDetails } from '@/components/organisms/job-post-details/job-details';
 import { formatSalary } from '@/utils/format-salary/format-salary';
+import { screeningRepository } from '@/repositories/screening-repository';
 
 interface JobDetailClientProps {
   initialData: JobPostResponseDTO;
@@ -69,8 +71,6 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
     setJobPostsData(initialData);
   }, [initialData]);
 
-  console.log('jobPostsData', jobPostsData);
-
   const transformJobPostToCandidates = (jobPost: JobPostResponseDTO, filter?: Stage) => {
     return (
       jobPost?.applications
@@ -78,6 +78,7 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
         .map((application) => ({
           ...application,
           ...application.applicant,
+          id: application.id,
           appliedAt: application.appliedAt,
           phone: application.applicant.phone || null,
           stage: application.currentStage,
@@ -96,6 +97,30 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
       setIsTableLoading(false);
     }
   };
+
+  const handleScreening = async (applicationId: number, customRequirement?: string) => {
+    const result = await screeningRepository.screening(applicationId, jobPostsData.id, customRequirement);
+    if (result?.success) {
+      const application = jobPostsData.applications?.find(application => application.id === applicationId);
+      if (application) {
+        const newApplications = jobPostsData.applications?.map(application => {
+          if (application.id === applicationId) {
+            return { ...application, screening: result.data };
+          }
+          return application;
+        });
+        setJobPostsData({ ...jobPostsData, applications: newApplications });
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    if (jobPostsData?.applications) {
+      for (const application of jobPostsData.applications) {
+        handleScreening(application.id);
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -281,7 +306,7 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                                 className="flex items-center space-x-2"
                               >
                                 <Filter className="h-4 w-4" />
-                                <span>Custom Requirements</span>
+                                <span className='cursor-pointer'>Custom Requirements</span>
                               </Button>
                             </div>
                           </div>

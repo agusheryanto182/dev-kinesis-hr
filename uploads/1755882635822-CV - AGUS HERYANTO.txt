@@ -1,0 +1,45 @@
+
+
+University Of Amikom Yogyakarta                                                                                             Yogyakarta
+Undergraduate informatics student                                                                          Sep 2022 - Present
+GPA: 3.91 (Current)
+Coursework : Algorithms, Artificial Intelligence, Database Programming, Operating Systems and
+Web Programming
+Top 3 back-end nominees at the Hacktalents event
+EDUCATION
+Project Sprint Golang                                                                                                                   Yogyakarta
+Participant                                                                                                                       Mei 2024 - Jun 2024
+Designed and implemented RESTful APIs using Golang to meet project specifications
+Optimized backend performance to ensure fast response times and resource efficiency
+Conducted load and stress testing on the developed backend using K6
+Project Based Internship Program x Rakamin Academy                                                       Jakarta Timur
+Full-Stack Developer                                                                                                     Nov 2023 - Nov 2023
+Completed a comprehensive web development program.
+Specialized in Go programming for front-end and back-end development.
+Gained practical experience through a hands-on learning approach.
+EXPERIENCE
++6288983633227 | agusheryanto.business@gmail.com | agusheryanto.me
+Sleman, Daerah Istimewa Yogyakarta 55281
+AGUS HERYANTO
+Technical: 
+Programming Languages: Go, Javascript, Typescript and PHP.
+Framework: Gin, Echo, Fiber, React, Vue, Next, Tailwind, Bootstrap, Express and Laravel.
+Databases: Skilled in MySQL, PostgreSQL, MongoDB and Redis
+SKILLS
+PT. Wesclic Indonesia Neotech                                                                                                     Yogyakarta
+Web Developer Intern                                                                                                     Aug 2024 - Nov 2024
+Head Developer at CSM Cargo, leading the development of a web application using Laravel and
+MySQL.
+Translated Figma designs into functional and responsive web pages.
+Coordinated with the team in daily scrums to ensure project alignment.
+Yayasan Adipurna Inovasi Asia (Vocasia)                                                                             Jakarta Selatan
+Full Stack Web Development Student                                                                               Sep 2024 - Present
+Completed a full-stack developer bootcamp covering HTML, CSS, JavaScript, React.js,
+Express.js, Node.js, and MongoDB.
+Led the team for the capstone project using the MERN stack.
+Practiced live coding, solved problems, and completed weekly assignments.
+CERTIFICATIONS
+Pemrograman Go-Lang : Pemula Sampai Mahir (2024)
+Belajar Membuat Aplikasi Back-End untuk Pemula (2023)
+Belajar Dasar Pemrograman Javascript (2023)
+Belajar Dasar Structured Query Language (SQL) (2023)
