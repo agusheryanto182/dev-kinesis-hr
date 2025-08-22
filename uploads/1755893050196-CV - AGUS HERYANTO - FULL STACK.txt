@@ -1,0 +1,48 @@
+
+
+Agus Heryanto 
+Sleman, Daerah Istimewa Yogyakarta, Indonesia 
+agusheryanto.business@gmail.com | +6288983633227 | Github | Linkedin | Portfolio 
+SUMMARY 
+Full Stack Developer with strong expertise in backend development using Go, Node.js, and Laravel, and solid frontend 
+experience with Next.js and TypeScript. Proficient in designing scalable systems, building RESTful APIs, integrating 
+payment gateways, and managing both relational and NoSQL databases (MySQL, PostgreSQL, MongoDB). Experienced in 
+Dockerized deployments, CI/CD pipelines, and microservices architecture. Passionate about writing clean, maintainable code 
+and delivering end-to-end solutions that solve real-world problems efficiently. 
+SKILLS 
+Go, TypeScript, Next.js, Node.js, Nest.js PHP (Laravel), MySQL, PostgreSQL, MongoDB, RESTful API, Docker, CI/CD, 
+Microservices. 
+WORK EXPERIENCE 
+80&company.inc Kyoto, Japan 
+Full Stack Developer Jan 2025 - Present 
+● Contributed to the development of new features for the existing platform, enhancing its functionality and user 
+experience. 
+● Worked on the frontend using Next.js, Chakra UI, TypeScript, React.js and Javascript implementing UI 
+improvements and interactive components 
+● Developed and optimized backend APIs using Go and Laravel to improve performance and scalability. 
+PT Wesclic Indonesia Neotech Yogyakarta, Indonesia 
+Web Developer Aug 2024 - Nov 2024 
+● Developed web application using Laravel and MySQL for the logistics platform. 
+● Translated Figma designs into functional and responsive web pages, ensuring an optimized user experience. 
+● Collaborated with teams during daily scrums to align the project with business goals and deadlines, ensuring timely 
+delivery and high-quality results. 
+Project Sprint Yogyakarta, Indonesia 
+Backend Developer May 2024 - Jun2024 
+● Designed and developed RESTful APIs using Go to meet project specifications, ensuring scalable and maintainable 
+backend services. 
+● Implemented performance optimizations to improve response times and resource efficiency, resulting in enhanced 
+system performance under high load. 
+● Conducted load and stress testing on the developed backend services using K6, identifying potential bottlenecks and 
+improving system reliability. 
+EDUCATION 
+University of Amikom Yogyakarta Yogyakarta, Indonesia 
+Informatics  Sep 2022 - Sep 2026 
+● GPA: 3.93/4.00 (Current) 
+● Relevant Courses: Algorithms, Artificial Intelligence, Database Programming, Operating Systems and Web 
+Programming 
+● Top 3 Backend Developer Finalist at Hacktalents 2024 
+Yayasan Adipurna Inovasi Asia (Vocasia) Jakarta Selatan, Indonesia 
+Full Stack Developer Sep 2024 - Dec 2024 
+● Awarded Best Mentee in MSIB Full Stack Web Development Vocasia 2024 
+● Completed a full stack developer bootcamp covering HTML, CSS, JavaScript, React.js, Express.js, Node.js, and 
+MongoDB. 

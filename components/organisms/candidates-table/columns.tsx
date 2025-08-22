@@ -22,6 +22,33 @@ import { ApplicationTableData } from '../application-table/application-table';
 
 type CandidateData = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+// Custom analyzing animation component
+const AnalyzingAnimation = () => (
+  <div className="flex items-center gap-1">
+    <span className="text-xs italic text-gray-500">Analyzing</span>
+    <div className="flex gap-1">
+      <span
+        className="animate-bounce text-gray-500 text-xs"
+        style={{ animationDelay: '0ms', animationDuration: '1s' }}
+      >
+        .
+      </span>
+      <span
+        className="animate-bounce text-gray-500 text-xs"
+        style={{ animationDelay: '200ms', animationDuration: '1s' }}
+      >
+        .
+      </span>
+      <span
+        className="animate-bounce text-gray-500 text-xs"
+        style={{ animationDelay: '400ms', animationDuration: '1s' }}
+      >
+        .
+      </span>
+    </div>
+  </div>
+);
+
 export const GetCandidatesTableColumns = (
   onDelete: () => void,
   onEditApplication?: (data: ApplicationTableData) => void,
@@ -99,9 +126,13 @@ export const GetCandidatesTableColumns = (
       header: 'Score',
       cell: ({ row }) => (
         <div className="text-muted-foreground">
-          {row.original.screening?.matchPercentage
-            ? row.original.screening?.matchPercentage + '%'
-            : '-'}
+          {!row.original?.screening ? (
+            <AnalyzingAnimation />
+          ) : row.original?.screening?.matchPercentage ? (
+            row.original.screening?.matchPercentage + '%'
+          ) : (
+            '-'
+          )}
         </div>
       ),
     },
@@ -111,11 +142,15 @@ export const GetCandidatesTableColumns = (
       cell: ({ row }) => (
         <div className="space-y-2">
           <div className="flex flex-wrap gap-1">
-            {row.original?.screening?.accurateKeywords.slice(0, 2).map((skill: string) => (
-              <Badge key={skill} className="text-xs bg-green-100 text-green-800">
-                {skill}
-              </Badge>
-            ))}
+            {!row.original?.screening ? (
+              <AnalyzingAnimation />
+            ) : (
+              row.original?.screening?.accurateKeywords.slice(0, 2).map((skill: string) => (
+                <Badge key={skill} className="text-xs bg-green-100 text-green-800">
+                  {skill}
+                </Badge>
+              ))
+            )}
             {row.original?.screening?.accurateKeywords.length > 2 && (
               <Badge className="text-xs">
                 +{row.original?.screening?.accurateKeywords.length - 2}
