@@ -20,10 +20,12 @@ import { DeleteAlert } from '../delete-alert';
 import { formatSingleSalary } from '@/utils/format-salary/format-salary';
 import { ApplicationTableData } from '../application-table/application-table';
 
-
 type CandidateData = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplication?: (data: ApplicationTableData) => void): ColumnDef<CandidateData>[] => {
+export const GetCandidatesTableColumns = (
+  onDelete: () => void,
+  onEditApplication?: (data: ApplicationTableData) => void,
+): ColumnDef<CandidateData>[] => {
   const handleDelete = async (id: number) => {
     try {
       await applicationRepository.deleteApplication(id);
@@ -70,7 +72,8 @@ export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplicatio
           >
             {row.original.fullName}
           </Link>
-          <div className="text-muted-foreground hover:underline cursor-pointer"
+          <div
+            className="text-muted-foreground hover:underline cursor-pointer"
             onClick={() => {
               window.open(`mailto:${row.original.email}`, '_blank');
               toast.success('Email opened in new tab');
@@ -78,7 +81,8 @@ export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplicatio
           >
             {row.original.email || 'N/A'}
           </div>
-          <div className="text-muted-foreground hover:underline cursor-pointer"
+          <div
+            className="text-muted-foreground hover:underline cursor-pointer"
             onClick={() => {
               window.open(`tel:${row.original.phone}`, '_blank');
               toast.success('Phone opened in new tab');
@@ -93,33 +97,42 @@ export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplicatio
     {
       accessorKey: 'score',
       header: 'Score',
-      cell: ({ row }) => <div className="text-muted-foreground">{row.original.screening?.matchPercentage ? row.original.screening?.matchPercentage + '%' : '-'}</div>,
+      cell: ({ row }) => (
+        <div className="text-muted-foreground">
+          {row.original.screening?.matchPercentage
+            ? row.original.screening?.matchPercentage + '%'
+            : '-'}
+        </div>
+      ),
     },
     {
       accessorKey: 'accurateKeywords',
       header: 'Skill Match',
-      cell: ({ row }) => <div className="space-y-2">
-        <div className="flex flex-wrap gap-1">
-          {row.original?.screening?.accurateKeywords.slice(0, 2).map((skill: string) => (
-            <Badge
-              key={skill}
-              className="text-xs bg-green-100 text-green-800"
-            >
-              {skill}
-            </Badge>
-          ))}
-          {row.original?.screening?.accurateKeywords.length > 2 && (
-            <Badge className="text-xs">
-              +{row.original?.screening?.accurateKeywords.length - 2}
-            </Badge>
-          )}
+      cell: ({ row }) => (
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-1">
+            {row.original?.screening?.accurateKeywords.slice(0, 2).map((skill: string) => (
+              <Badge key={skill} className="text-xs bg-green-100 text-green-800">
+                {skill}
+              </Badge>
+            ))}
+            {row.original?.screening?.accurateKeywords.length > 2 && (
+              <Badge className="text-xs">
+                +{row.original?.screening?.accurateKeywords.length - 2}
+              </Badge>
+            )}
+          </div>
         </div>
-      </div>,
+      ),
     },
     {
       accessorKey: 'yearOfExperience',
       header: 'Year of Experience',
-      cell: ({ row }) => <div className="text-muted-foreground">{row.original.yearOfExperience > 0 ? row.original.yearOfExperience : '-'}</div>,
+      cell: ({ row }) => (
+        <div className="text-muted-foreground">
+          {row.original.yearOfExperience > 0 ? row.original.yearOfExperience : '-'}
+        </div>
+      ),
     },
     {
       accessorKey: 'location',
@@ -129,7 +142,11 @@ export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplicatio
     {
       accessorKey: 'expectedSalary',
       header: 'Expected Salary',
-      cell: ({ row }) => <div className="text-muted-foreground">{formatSingleSalary(row.original.expectedSalary)}</div>,
+      cell: ({ row }) => (
+        <div className="text-muted-foreground">
+          {formatSingleSalary(row.original.expectedSalary)}
+        </div>
+      ),
     },
     {
       accessorKey: 'resumeUrl',
@@ -175,7 +192,10 @@ export const GetCandidatesTableColumns = (onDelete: () => void, onEditApplicatio
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
-              <Link href={`/hiring/candidates/${row.original.applicantId}`} className="cursor-pointer">
+              <Link
+                href={`/hiring/candidates/${row.original.applicantId}`}
+                className="cursor-pointer"
+              >
                 View Details
               </Link>
             </DropdownMenuItem>

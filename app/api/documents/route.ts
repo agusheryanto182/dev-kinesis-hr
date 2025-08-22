@@ -15,7 +15,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -76,8 +75,6 @@ export async function POST(req: Request) {
               .end(buffer);
           });
 
-          
-
           // 3. Save record in Prisma
           const documentData: any = {
             fileName: file.name,
@@ -103,12 +100,16 @@ export async function POST(req: Request) {
     }
 
     if (uploadErrors.length > 0 && uploadResults.length === 0) {
-      return NextResponse.json({ error: 'All file uploads failed', details: uploadErrors }, { status: 500 });
+      return NextResponse.json(
+        { error: 'All file uploads failed', details: uploadErrors },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(
       {
-        message: uploadErrors.length > 0 ? 'Some files failed to upload' : 'Files uploaded successfully',
+        message:
+          uploadErrors.length > 0 ? 'Some files failed to upload' : 'Files uploaded successfully',
         data: uploadResults,
         errors: uploadErrors.length > 0 ? uploadErrors : undefined,
       },
@@ -119,8 +120,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to process file uploads' }, { status: 500 });
   }
 }
-
-
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);

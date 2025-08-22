@@ -75,7 +75,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const prompt = genPrompt(jobPost.description, cvText, custom_requirement);
 
         const result = await geminiAI.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash',
           contents: prompt,
           config: {
             temperature: 0,

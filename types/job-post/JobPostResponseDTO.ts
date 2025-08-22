@@ -32,8 +32,17 @@ export interface ApplicationWithDetailsDTO {
   applicant: Applicant;
   documents: ApplicationDocumentDTO[];
   stageHistory: ApplicationStageHistoryDTO[];
+  screening?: Screening;
 }
 
 export type JobPostResponseDTO = JobPost & {
   applications?: ApplicationWithDetailsDTO[];
 };
+
+export interface Screening {
+  accurateKeywords?: string[];
+  finalThoughts?: string;
+  matchPercentage?: number;
+  missingKeywords?: string[];
+  recommendations?: string;
+}

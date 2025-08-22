@@ -55,16 +55,19 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
     skills: [] as string[],
     minExperience: 0,
     maxSalary: 0,
-    customFilters: {} as Record<string, string>
+    customFilters: {} as Record<string, string>,
   });
+  const [hasScreening, setHasScreening] = React.useState(false);
 
   // Helper function to check if filters are active
   const hasActiveFilters = () => {
-    return filters.experienceLevel && filters.experienceLevel !== 'all' ||
+    return (
+      (filters.experienceLevel && filters.experienceLevel !== 'all') ||
       filters.skills.length > 0 ||
       filters.location ||
       filters.minScore > 0 ||
-      Object.keys(filters.customFilters).some(key => filters.customFilters[key]);
+      Object.keys(filters.customFilters).some((key) => filters.customFilters[key])
+    );
   };
 
   React.useEffect(() => {
@@ -99,23 +102,31 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
   };
 
   const handleScreening = async (applicationId: number, customRequirement?: string) => {
-    const result = await screeningRepository.screening(applicationId, jobPostsData.id, customRequirement);
-    if (result?.success) {
-      const application = jobPostsData.applications?.find(application => application.id === applicationId);
-      if (application) {
-        const newApplications = jobPostsData.applications?.map(application => {
-          if (application.id === applicationId) {
-            return { ...application, screening: result.data };
-          }
-          return application;
-        });
-        setJobPostsData({ ...jobPostsData, applications: newApplications });
+    const result = await screeningRepository.screening(
+      applicationId,
+      jobPostsData.id,
+      customRequirement,
+    );
+    if (result?.success && result.data) {
+      const screeningData = result.data;
+      if (
+        typeof screeningData.matchPercentage === 'number' &&
+        Array.isArray(screeningData.accurateKeywords) &&
+        Array.isArray(screeningData.missingKeywords)
+      ) {
+        const updatedApplications = jobPostsData.applications?.map((app) =>
+          app.id === applicationId ? { ...app, screening: screeningData } : app,
+        );
+        setJobPostsData({ ...jobPostsData, applications: updatedApplications });
+      } else {
+        console.error('Invalid screening data structure:', screeningData);
       }
     }
   };
 
   React.useEffect(() => {
-    if (jobPostsData?.applications) {
+    if (jobPostsData?.applications && !hasScreening) {
+      setHasScreening(true);
       for (const application of jobPostsData.applications) {
         handleScreening(application.id);
       }
@@ -176,10 +187,19 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
-                          <span>Posted {new Date(jobPostsData.createdAt).toLocaleDateString()}</span>
+                          <span>
+                            Posted {new Date(jobPostsData.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span>{formatSalary(jobPostsData.salaryMin?.toString(), jobPostsData.salaryMax?.toString(), jobPostsData.currency, jobPostsData.salaryType)}</span>
+                          <span>
+                            {formatSalary(
+                              jobPostsData.salaryMin?.toString(),
+                              jobPostsData.salaryMax?.toString(),
+                              jobPostsData.currency,
+                              jobPostsData.salaryType,
+                            )}
+                          </span>
                         </div>
                       </div>
                     </header>
@@ -306,7 +326,7 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                                 className="flex items-center space-x-2"
                               >
                                 <Filter className="h-4 w-4" />
-                                <span className='cursor-pointer'>Custom Requirements</span>
+                                <span className="cursor-pointer">Custom Requirements</span>
                               </Button>
                             </div>
                           </div>
@@ -327,8 +347,10 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                               {filters.experienceLevel && filters.experienceLevel !== 'all' && (
                                 <Badge variant="outline">Level: {filters.experienceLevel}</Badge>
                               )}
-                              {filters.skills.map(skill => (
-                                <Badge key={skill} variant="outline">Skill: {skill}</Badge>
+                              {filters.skills.map((skill) => (
+                                <Badge key={skill} variant="outline">
+                                  Skill: {skill}
+                                </Badge>
                               ))}
                               {filters.location && (
                                 <Badge variant="outline">Location: {filters.location}</Badge>
@@ -336,24 +358,29 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                               {filters.minScore > 0 && (
                                 <Badge variant="outline">Min Score: {filters.minScore}%</Badge>
                               )}
-                              {Object.entries(filters.customFilters).map(([key, value]) =>
-                                value && (
-                                  <Badge key={key} variant="outline">{key}: {value}</Badge>
-                                )
+                              {Object.entries(filters.customFilters).map(
+                                ([key, value]) =>
+                                  value && (
+                                    <Badge key={key} variant="outline">
+                                      {key}: {value}
+                                    </Badge>
+                                  ),
                               )}
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setFilters({
-                                  experienceLevel: '',
-                                  minScore: 0,
-                                  maxScore: 100,
-                                  location: '',
-                                  skills: [],
-                                  minExperience: 0,
-                                  maxSalary: 0,
-                                  customFilters: {}
-                                })}
+                                onClick={() =>
+                                  setFilters({
+                                    experienceLevel: '',
+                                    minScore: 0,
+                                    maxScore: 100,
+                                    location: '',
+                                    skills: [],
+                                    minExperience: 0,
+                                    maxSalary: 0,
+                                    customFilters: {},
+                                  })
+                                }
                                 className="text-blue-600 hover:text-blue-800"
                               >
                                 Clear all

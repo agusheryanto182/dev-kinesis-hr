@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { CreateApplicationRequestDTO } from '@/types/application';
 import { Type } from '@google/genai';
 import { geminiAI } from '@/lib/gemini';
-import fs from "fs/promises"
+import fs from 'fs/promises';
 
 export async function GET() {
   const applications = await prisma.application.findMany({
@@ -21,20 +21,13 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { message: "Validation error", errors: validation.error.errors },
-        { status: 400 }
+        { message: 'Validation error', errors: validation.error.errors },
+        { status: 400 },
       );
     }
 
-    const {
-      fullName,
-      email,
-      phone,
-      jobPostId,
-      expectedSalary,
-      notes,
-      documentIds,
-    } = validation.data;
+    const { fullName, email, phone, jobPostId, expectedSalary, notes, documentIds } =
+      validation.data;
 
     const result = await prisma.$transaction(
       async (tx) => {
@@ -44,7 +37,7 @@ export async function POST(request: Request) {
         });
 
         if (document.localPath) {
-          const cvText = await fs.readFile(document.localPath, "utf-8");
+          const cvText = await fs.readFile(document.localPath, 'utf-8');
 
           const extractPrompt = (cvText: string) => `
               You are a resume parser.
@@ -56,10 +49,10 @@ export async function POST(request: Request) {
             `;
 
           const response = await geminiAI.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: 'gemini-2.5-flash',
             contents: extractPrompt(cvText),
             config: {
-              responseMimeType: "application/json",
+              responseMimeType: 'application/json',
               responseSchema: {
                 type: Type.OBJECT,
                 properties: {
@@ -102,7 +95,6 @@ export async function POST(request: Request) {
             },
           });
 
-
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let parsedData: any = {};
           try {
@@ -110,9 +102,8 @@ export async function POST(request: Request) {
               parsedData = JSON.parse(response.text);
             }
           } catch (err) {
-            console.error("Failed to parse AI response:", err);
+            console.error('Failed to parse AI response:', err);
           }
-
 
           // Check applicant
           let applicant = await tx.applicant.findUnique({ where: { email } });
@@ -138,7 +129,7 @@ export async function POST(request: Request) {
             where: { applicantId: applicant.id, jobPostId },
           });
           if (existingApplication) {
-            throw new Error("You have already applied for this job");
+            throw new Error('You have already applied for this job');
           }
 
           // Create application
@@ -166,36 +157,33 @@ export async function POST(request: Request) {
           });
 
           if (!completeApplication) {
-            throw new Error("Failed to create application");
+            throw new Error('Failed to create application');
           }
 
           return completeApplication;
         }
-
       },
       {
         timeout: 30000,
         maxWait: 35000,
-        isolationLevel: "Serializable",
-      }
+        isolationLevel: 'Serializable',
+      },
     );
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    console.error("Error in POST /api/applications:", error);
+    console.error('Error in POST /api/applications:', error);
     return NextResponse.json(
       {
-        message:
-          error instanceof Error ? error.message : "Error creating application",
-        error: error instanceof Error ? error.message : "Unknown error",
+        message: error instanceof Error ? error.message : 'Error creating application',
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       {
         status:
-          error instanceof Error &&
-            error.message === "You have already applied for this job"
+          error instanceof Error && error.message === 'You have already applied for this job'
             ? 409
             : 500,
-      }
+      },
     );
   }
 }

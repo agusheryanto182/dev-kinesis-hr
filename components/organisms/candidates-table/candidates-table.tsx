@@ -16,7 +16,12 @@ interface CandidatesTableProps {
   onEditApplication?: () => void;
 }
 
-export function CandidatesTable({ data, onDelete, isLoading, onEditApplication }: CandidatesTableProps) {
+export function CandidatesTable({
+  data,
+  onDelete,
+  isLoading,
+  onEditApplication,
+}: CandidatesTableProps) {
   const [isUpdateApplicationModalOpen, setIsUpdateApplicationModalOpen] = React.useState(false);
   const [selectedApplication, setSelectedApplication] = React.useState<ApplicationTableData | null>(
     null,

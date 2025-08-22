@@ -75,7 +75,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} options={options} searchColumn={searchColumn} showView={showView} />
+      <DataTableToolbar
+        table={table}
+        options={options}
+        searchColumn={searchColumn}
+        showView={showView}
+      />
       <div className="relative rounded-md border">
         {isLoading && <DataTableLoading />}
         <Table>
