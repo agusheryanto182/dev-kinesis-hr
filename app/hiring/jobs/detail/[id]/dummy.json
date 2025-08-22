@@ -1,0 +1,102 @@
+{
+  "id": 66,
+  "title": "golang developer",
+  "description": "Kami adalah perusahaan teknologi yang bergerak di bidang [sebutkan industri, mis. fintech, e-commerce, SaaS] dengan fokus pada pengembangan layanan yang scalable dan high-performance. Saat ini kami mencari Golang Developer yang berpengalaman untuk bergabung dan berkontribusi dalam tim R&D.\n\n\nTanggung Jawab Utama:\n\n\n\nMerancang, mengembangkan, dan memelihara aplikasi backend menggunakan bahasa pemrograman Go (Golang).\n\nMenerapkan API (RESTful/ gRPC) yang aman, efisien, dan mudah di-scale.\n\nBekerja sama dengan tim product, frontend, dan DevOps untuk menghadirkan solusi end-to-end.\n\nMengoptimalkan performa, menulis benchmark, serta profiling aplikasi.\n\nMenulis unit test, integration test, dan memastikan kualitas kode dengan code review.\n\nMenyusun dokumentasi teknis dan pedoman penggunaan API.\n\nTroubleshooting dan debugging untuk menemukan serta memperbaiki bug.\n\nMenerapkan praktik CI/CD dan berkontribusi pada automasi deployment.\n\nonly a very basic and somewhat confused understanding of Fiber and Echo frameworks. Terminology is often incorrect (e.g., ‘boleh’ instead of ‘Golang’, ‘Viber’ instead of ‘Fiber’), explanations lack depth and clarity, and key differences between frameworks are not articulated accurately.\nKualifikasi & Keahlian:\n\n\n\nPendidikan minimum S1 di bidang Ilmu Komputer, Teknik Informatika, atau setara.\n\nPengalaman kerja minimal 2 tahun dalam mengembangkan aplikasi menggunakan Golang.\n\nMenguasai konsep concurrency di Go (goroutines, channel, context).\n\nBerpengalaman dengan database SQL (PostgreSQL/MySQL) dan/atau NoSQL (MongoDB, Redis).\n\nFamiliar dengan protokol HTTP, REST, gRPC, dan WebSocket.\n\nMemiliki pemahaman tentang containerization (Docker) dan orkestrasi (Kubernetes) adalah nilai plus.\n\nTerbiasa menggunakan alat version control Git dan workflow Git branching.\n\nPaham prinsip Clean Code, design pattern, dan arsitektur microservices.\n\nKemampuan komunikasi yang baik dan mampu bekerja dalam tim Agile/Scrum.\n\n\nKarakteristik Pribadi:\n\n• Problem-solver yang proaktif dan inovatif.\n\n• Mampu bekerja di bawah tekanan dan deadline ketat.\n\n• Detail-oriented dan bertanggung jawab.\n\n• Terbuka terhadap feedback serta mau belajar teknologi baru.",
+  "location": "Remote",
+  "employmentType": "FULL_TIME",
+  "status": "PUBLISHED",
+  "department": "technology",
+  "salaryMin": "120000000",
+  "salaryMax": "150000000",
+  "currency": "IDR",
+  "salaryType": "MONTHLY",
+  "createdAt": "2025-08-06T03:04:16.508Z",
+  "updatedAt": "2025-08-06T03:04:16.508Z",
+  "applications": [
+    {
+      "id": 116,
+      "applicantId": 63,
+      "jobPostId": 66,
+      "currentStage": "APPLIED",
+      "expectedSalary": "10000000",
+      "appliedAt": "2025-08-06T03:04:42.500Z",
+      "notes": "",
+      "applicant": {
+        "id": 63,
+        "userId": null,
+        "fullName": "Agus Heryanto",
+        "email": "agusheryantodev@gmail.com",
+        "phone": "+6281296380081",
+        "appliedAt": "2025-08-05T09:14:30.613Z",
+        "summary": "Full Stack Developer with expertise in backend development using Go, Node.js, and Laravel, and frontend experience with Next.js and TypeScript. Experienced in designing scalable systems, building RESTful APIs, integrating payment gateways, and managing both relational and NoSQL databases. Proficient in Dockerized deployments, CI/CD pipelines, and microservices architecture. Passionate about writing clean, maintainable code and delivering end-to-end solutions efficiently.",
+        "skills": [
+          {
+            "skill_name": "Golang",
+            "skill_level": "Intermediate",
+            "assessment_notes": "Candidate demonstrates basic understanding of Fiber and Echo differences by noting Fiber uses fasthttp and Echo uses net/http. Initial response was unclear, but follow-up shows correct core knowledge. Lacks deeper details on trade-offs and use cases."
+          }
+        ],
+        "experience": [
+          {
+            "role": "Full Stack Developer",
+            "company": "80&company.inc",
+            "duration": "",
+            "responsibilities": [
+              "Designed scalable systems and built RESTful APIs",
+              "Integrated payment gateways",
+              "Managed relational and NoSQL databases",
+              "Developed frontend features using Next.js and TypeScript",
+              "Implemented Dockerized deployments, CI/CD pipelines, and microservices architecture"
+            ]
+          },
+          {
+            "role": "Web Developer",
+            "company": "PT Wesclic Indonesia Neotech",
+            "duration": "",
+            "responsibilities": [
+              "Developed web applications using Laravel and MySQL",
+              "Built responsive user interfaces and integrated backend services",
+              "Collaborated with teams to deliver project requirements"
+            ]
+          },
+          {
+            "role": "Backend Developer",
+            "company": "Project Sprint",
+            "duration": "",
+            "responsibilities": [
+              "Developed RESTful APIs using Go",
+              "Implemented efficient database schemas and queries",
+              "Ensured API performance and reliability"
+            ]
+          }
+        ],
+        "languages": ["Indonesian"],
+        "location": "Sleman, Daerah Istimewa Yogyakarta, Indonesia",
+        "education": [
+          {
+            "major": "Informatics",
+            "degree": "Bachelor's Degree",
+            "institution": "University of Amikom Yogyakarta"
+          }
+        ]
+      },
+      "stageHistory": [],
+      "documents": [
+        {
+          "id": 84,
+          "applicationId": 116,
+          "documentId": 84,
+          "document": {
+            "id": 84,
+            "fileName": "CV - AGUS HERYANTO - FULL STACK.pdf",
+            "filePath": "https://res.cloudinary.com/dpb2qk5lf/raw/upload/v1754449481/documents/anonymous/1754449481597-CV%20-%20AGUS%20HERYANTO%20-%20FULL%20STACK.pdf",
+            "fileSize": 117756,
+            "fileType": "pdf",
+            "createdAt": "2025-08-06T03:04:41.985Z",
+            "ownerId": 1
+          }
+        }
+      ]
+    }
+  ]
+}

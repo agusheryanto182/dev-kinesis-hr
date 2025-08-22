@@ -15,13 +15,11 @@ import { Stage } from '@/constants/enums/stage';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAIAssistant } from '@/hooks/use-ai-assistant/use-ai-assistant';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { Calendar, ChevronDown, Info, MapPin, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Filter } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { AdvancedFilters } from '@/components/organisms/job-post-details/advanced-filters';
 import {
   Select,
   SelectTrigger,
@@ -30,6 +28,8 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { handleMutation as handleHiringMutation } from '@/utils/mutation/mutation';
+import { JobDetails } from '@/components/organisms/job-post-details/job-details';
+import { formatSalary } from '@/utils/format-salary/format-salary';
 
 interface JobDetailClientProps {
   initialData: JobPostResponseDTO;
@@ -42,20 +42,44 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
   const [isTableLoading, setIsTableLoading] = React.useState(false);
   const { isMinimized: isAIAssistantMinimized } = useAIAssistant();
   const [activeTab, setActiveTab] = React.useState('applied');
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [showJobDetails, setShowJobDetails] = React.useState(false);
+  const [showFilters, setShowFilters] = React.useState(false);
+  const [filters, setFilters] = React.useState({
+    experienceLevel: '',
+    minScore: 0,
+    maxScore: 100,
+    location: '',
+    skills: [] as string[],
+    minExperience: 0,
+    maxSalary: 0,
+    customFilters: {} as Record<string, string>
+  });
+
+  // Helper function to check if filters are active
+  const hasActiveFilters = () => {
+    return filters.experienceLevel && filters.experienceLevel !== 'all' ||
+      filters.skills.length > 0 ||
+      filters.location ||
+      filters.minScore > 0 ||
+      Object.keys(filters.customFilters).some(key => filters.customFilters[key]);
+  };
 
   React.useEffect(() => {
     setJobPostsData(initialData);
   }, [initialData]);
+
+  console.log('jobPostsData', jobPostsData);
 
   const transformJobPostToCandidates = (jobPost: JobPostResponseDTO, filter?: Stage) => {
     return (
       jobPost?.applications
         ?.filter((application) => application.currentStage === filter)
         .map((application) => ({
+          ...application,
           ...application.applicant,
           appliedAt: application.appliedAt,
           phone: application.applicant.phone || null,
-          resumeUrl: application?.documents[0]?.document.filePath || null,
           stage: application.currentStage,
         })) || []
     );
@@ -96,27 +120,51 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                   )}
                 >
                   <div className="px-4 lg:px-6">
-                    <div className="mb-6 flex gap-4 justify-between items-center">
-                      <Breadcrumb>
-                        <BreadcrumbList>
-                          <BreadcrumbItem>
-                            <BreadcrumbLink href="/hiring">Hiring</BreadcrumbLink>
-                          </BreadcrumbItem>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            {jobPostsData?.title || 'Job Post Detail'}
-                          </BreadcrumbItem>
-                        </BreadcrumbList>
-                      </Breadcrumb>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2 cursor-pointer"
-                        onClick={() => setIsDetailModalOpen(true)}
-                      >
-                        View Description
-                      </Button>
-                    </div>
+                    {/* Header */}
+                    <header>
+                      {/* Breadcrumb */}
+                      <div className=" flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <span>Hiring</span>
+                          <ChevronDown className="h-4 w-4 rotate-[-90deg]" />
+                          <span>{jobPostsData.title}</span>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowJobDetails(!showJobDetails)}
+                            className="flex items-center space-x-2 cursor-pointer"
+                          >
+                            <Info className="h-4 w-4" />
+                            <span>Job Details</span>
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Job Summary */}
+                      <div className="my-4 flex items-center space-x-6 text-sm text-gray-600">
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="h-4 w-4" />
+                          <span>{jobPostsData.location}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>Posted {new Date(jobPostsData.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span>{formatSalary(jobPostsData.salaryMin?.toString(), jobPostsData.salaryMax?.toString(), jobPostsData.currency, jobPostsData.salaryType)}</span>
+                        </div>
+                      </div>
+                    </header>
+
+                    {/* Job Details Panel */}
+                    {showJobDetails && (
+                      <div className="pb-6">
+                        <JobDetails job={jobPostsData} />
+                      </div>
+                    )}
 
                     <div className="block md:hidden mb-4">
                       <Select value={activeTab} onValueChange={setActiveTab}>
@@ -212,7 +260,84 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
                             Rejected
                           </TabsTrigger>
                         </TabsList>
-                        <div className="relative mt-6">
+
+                        {/* Search and Actions */}
+                        <div className="pt-4">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-4">
+                              <div className="relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Input
+                                  placeholder="Search by name, skills, experience..."
+                                  value={searchTerm}
+                                  onChange={(e) => setSearchTerm(e.target.value)}
+                                  className="pl-10 w-80"
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="flex items-center space-x-2"
+                              >
+                                <Filter className="h-4 w-4" />
+                                <span>Custom Requirements</span>
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Advanced Filters */}
+                          {showFilters && (
+                            <AdvancedFilters
+                              filters={filters}
+                              onFiltersChange={setFilters}
+                              jobRequiredSkills={[]}
+                            />
+                          )}
+
+                          {/* Active Filters Summary */}
+                          {hasActiveFilters() && (
+                            <div className="mt-4 flex items-center space-x-2 text-sm">
+                              <span className="text-gray-600">Active filters:</span>
+                              {filters.experienceLevel && filters.experienceLevel !== 'all' && (
+                                <Badge variant="outline">Level: {filters.experienceLevel}</Badge>
+                              )}
+                              {filters.skills.map(skill => (
+                                <Badge key={skill} variant="outline">Skill: {skill}</Badge>
+                              ))}
+                              {filters.location && (
+                                <Badge variant="outline">Location: {filters.location}</Badge>
+                              )}
+                              {filters.minScore > 0 && (
+                                <Badge variant="outline">Min Score: {filters.minScore}%</Badge>
+                              )}
+                              {Object.entries(filters.customFilters).map(([key, value]) =>
+                                value && (
+                                  <Badge key={key} variant="outline">{key}: {value}</Badge>
+                                )
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setFilters({
+                                  experienceLevel: '',
+                                  minScore: 0,
+                                  maxScore: 100,
+                                  location: '',
+                                  skills: [],
+                                  minExperience: 0,
+                                  maxSalary: 0,
+                                  customFilters: {}
+                                })}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                Clear all
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="relative">
                           <AnimatePresence mode="wait">
                             <motion.div
                               key={activeTab}

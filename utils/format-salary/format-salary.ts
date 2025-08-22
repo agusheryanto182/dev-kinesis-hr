@@ -54,3 +54,15 @@ export const formatSalary = (
 
   return formattedSalary.trim();
 };
+
+export const formatSingleSalary = (salary: number | string | null): string | null => {
+  if (!salary) {
+    return null;
+  }
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+  });
+
+  return formatter.format(salary as number);
+};

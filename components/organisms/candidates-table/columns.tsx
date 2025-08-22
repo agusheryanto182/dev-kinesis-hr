@@ -17,6 +17,7 @@ import { formatDate } from '@/utils/format-date';
 import { toast } from 'sonner';
 import { applicationRepository } from '@/repositories/application-repository';
 import { DeleteAlert } from '../delete-alert';
+import { formatSingleSalary } from '@/utils/format-salary/format-salary';
 
 type CandidateData = ApplicantResponseDTO;
 
@@ -58,45 +59,68 @@ export const GetCandidatesTableColumns = (onDelete: () => void): ColumnDef<Candi
     },
     {
       accessorKey: 'fullName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Full Name" />,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Candidate" />,
       cell: ({ row }) => (
-        <Link
-          href={`/hiring/candidates/${row.original.id}`}
-          className="font-medium hover:underline cursor-pointer hover:text-blue-500"
-        >
-          {row.original.fullName}
-        </Link>
+        <>
+          <Link
+            href={`/hiring/candidates/${row.original.id}`}
+            className="font-medium hover:underline cursor-pointer hover:text-blue-500"
+          >
+            {row.original.fullName}
+          </Link>
+          <div className="text-muted-foreground hover:underline cursor-pointer"
+            onClick={() => {
+              window.open(`mailto:${row.original.email}`, '_blank');
+              toast.success('Email opened in new tab');
+            }}
+          >
+            {row.original.email || 'N/A'}
+          </div>
+          <div className="text-muted-foreground hover:underline cursor-pointer"
+            onClick={() => {
+              window.open(`tel:${row.original.phone}`, '_blank');
+              toast.success('Phone opened in new tab');
+            }}
+          >
+            {row.original.phone || 'N/A'}
+          </div>
+        </>
       ),
       enableHiding: false,
     },
     {
-      accessorKey: 'email',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
-      cell: ({ row }) => (
-        <div
-          className="text-muted-foreground hover:underline cursor-pointer"
-          onClick={() => {
-            window.open(`mailto:${row.original.email}`, '_blank');
-            toast.success('Email opened in new tab');
-          }}
-        >
-          {row.original.email || 'N/A'}
-        </div>
-      ),
+      accessorKey: 'score',
+      header: 'Score',
+      cell: ({ }) => <div className="text-muted-foreground">{'N/A'}</div>,
     },
     {
-      accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div className="text-muted-foreground">{row.original.phone || 'N/A'}</div>,
+      accessorKey: 'skillMatch',
+      header: 'Skill Match',
+      cell: ({ }) => <div className="text-muted-foreground">{'N/A'}</div>,
+    },
+    {
+      accessorKey: 'yearOfExperience',
+      header: 'Year of Experience',
+      cell: ({ row }) => <div className="text-muted-foreground">1 year bro</div>,
+    },
+    {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => <div className="text-muted-foreground">{row.original.location}</div>,
+    },
+    {
+      accessorKey: 'expectedSalary',
+      header: 'Expected Salary',
+      cell: ({ row }) => <div className="text-muted-foreground">{formatSingleSalary(row.original.expectedSalary)}</div>,
     },
     {
       accessorKey: 'resumeUrl',
       header: 'Resume',
       cell: ({ row }) => (
         <div>
-          {row.original?.applications?.[0]?.documents?.[0]?.document?.filePath ? (
+          {row.original?.documents?.[0]?.document?.filePath ? (
             <Link
-              href={row.original?.applications?.[0]?.documents?.[0]?.document?.filePath}
+              href={row.original?.documents?.[0]?.document?.filePath}
               target="_blank"
               rel="noopener noreferrer"
             >

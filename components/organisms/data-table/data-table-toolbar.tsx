@@ -13,12 +13,14 @@ interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   options?: StatusOptions[];
   searchColumn?: string;
+  showView?: boolean;
 }
 
 export function DataTableToolbar<TData>({
   table,
   options,
   searchColumn,
+  showView = true,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -55,7 +57,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      {showView && <DataTableViewOptions table={table} />}
     </div>
   );
 }

@@ -15,9 +15,11 @@ interface CandidatesTableProps {
 export function CandidatesTable({ data, onDelete, isLoading }: CandidatesTableProps) {
   const columns = GetCandidatesTableColumns(onDelete);
 
+  console.log(data);
+
   return (
     <>
-      <DataTable columns={columns} data={data} searchColumn="fullName" isLoading={isLoading} />
+      <DataTable columns={columns} data={data} isLoading={isLoading} showView={false} />
     </>
   );
 }

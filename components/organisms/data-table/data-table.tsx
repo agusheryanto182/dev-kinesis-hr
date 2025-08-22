@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   options?: StatusOptions[];
   searchColumn?: string;
   isLoading?: boolean;
+  showView?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -44,6 +45,7 @@ export function DataTable<TData, TValue>({
   options,
   searchColumn,
   isLoading,
+  showView,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -73,7 +75,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} options={options} searchColumn={searchColumn} />
+      <DataTableToolbar table={table} options={options} searchColumn={searchColumn} showView={showView} />
       <div className="relative rounded-md border">
         {isLoading && <DataTableLoading />}
         <Table>
