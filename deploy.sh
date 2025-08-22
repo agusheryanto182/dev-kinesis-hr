@@ -43,7 +43,7 @@ check_prerequisites() {
         exit 1
     fi
     
-    if ! command_exists docker-compose; then
+    if ! command_exists docker compose; then
         print_error "Docker Compose is not installed. Please install Docker Compose first."
         exit 1
     fi
@@ -84,7 +84,7 @@ init_ssl() {
     echo "<html><body><h1>Kinesis HR - SSL Verification</h1></body></html>" > nginx/html/index.html
     
     print_info "Starting Nginx for SSL certificate generation..."
-    docker-compose up -d nginx
+    docker compose up -d nginx
     
     # Wait a moment for Nginx to start
     sleep 10
@@ -92,12 +92,12 @@ init_ssl() {
     print_info "Generating SSL certificate with Let's Encrypt..."
     print_warning "Make sure your domain app.kinesishr.online points to this server's IP address"
     
-    # Update email in docker-compose.yml before running
+    # Update email in docker compose.yml before running
     read -p "Enter your email for Let's Encrypt notifications: " email
     
     if [ -n "$email" ]; then
         # Run certbot to get SSL certificate
-        docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/html --email "$email" --agree-tos --no-eff-email -d app.kinesishr.online
+        docker compose run --rm certbot certonly --webroot --webroot-path=/var/www/html --email "$email" --agree-tos --no-eff-email -d app.kinesishr.online
         
         if [ $? -eq 0 ]; then
             print_success "SSL certificate generated successfully"
@@ -116,7 +116,7 @@ run_migrations() {
     
     # Wait for database to be ready
     print_info "Waiting for database to be ready..."
-    docker-compose exec app npx prisma migrate deploy
+    docker compose exec app npx prisma migrate deploy
     
     if [ $? -eq 0 ]; then
         print_success "Database migrations completed"
@@ -132,7 +132,7 @@ deploy() {
     
     # Build and start all services
     print_info "Building and starting services..."
-    docker-compose up -d --build
+    docker compose up -d --build
     
     # Wait for services to be ready
     print_info "Waiting for services to be ready..."
@@ -140,7 +140,7 @@ deploy() {
     
     # Check if application is healthy
     print_info "Checking application health..."
-    if docker-compose exec app curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
+    if docker compose exec app curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
         print_success "Application is healthy"
     else
         print_warning "Application health check failed, but services are running"
@@ -151,26 +151,26 @@ deploy() {
     
     print_success "Deployment completed!"
     print_info "Application should be available at: https://app.kinesishr.online"
-    print_info "Use 'docker-compose logs -f' to view application logs"
+    print_info "Use 'docker compose logs -f' to view application logs"
 }
 
 # Stop deployment
 stop() {
     print_info "Stopping Kinesis HR services..."
-    docker-compose down
+    docker compose down
     print_success "Services stopped"
 }
 
 # Show logs
 logs() {
     print_info "Showing application logs..."
-    docker-compose logs -f "$1"
+    docker compose logs -f "$1"
 }
 
 # Show status
 status() {
     print_info "Service status:"
-    docker-compose ps
+    docker compose ps
 }
 
 # Backup database
@@ -179,7 +179,7 @@ backup() {
     timestamp=$(date +%Y%m%d_%H%M%S)
     backup_file="backup_${timestamp}.sql"
     
-    docker-compose exec postgres pg_dump -U postgres -d kinesis_hr > "$backup_file"
+    docker compose exec postgres pg_dump -U postgres -d kinesis_hr > "$backup_file"
     
     if [ $? -eq 0 ]; then
         print_success "Database backup created: $backup_file"
