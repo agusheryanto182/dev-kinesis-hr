@@ -1,5 +1,5 @@
 # Use official Node.js runtime as base image
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -9,7 +9,17 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm ci
+
+# Clear npm cache and install dependencies
+RUN npm cache clean --force
+
+# Install dependencies with proper error handling for Node.js 22
+RUN if [ -f package-lock.json ]; then \
+      npm ci --legacy-peer-deps --no-audit --no-fund || \
+      (rm -f package-lock.json && npm install --legacy-peer-deps --no-audit --no-fund); \
+    else \
+      npm install --legacy-peer-deps --no-audit --no-fund; \
+    fi
 
 # Rebuild the source code only when needed
 FROM base AS builder
