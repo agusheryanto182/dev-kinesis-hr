@@ -86,6 +86,7 @@ model Document {
   fileType  String   @db.Text
   createdAt DateTime  @default(now())
   ownerId  Int?
+  localPath String?
 
   owner    User?      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   contexts ContextDocument[]
@@ -168,6 +169,8 @@ model Applicant {
   languages    Json? // Stores [{ language: String, proficiency: String }]
   location     String?
   education    Json? // Stores [{ institution: String, degree: String, startDate: DateTime, endDate: DateTime }]
+  yearOfExperience Int?
+  profileLinks String[]
 
 
   applications Application[]

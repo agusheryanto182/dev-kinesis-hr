@@ -3,8 +3,10 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
-import { Document } from '@prisma/client'; // Import the Document type from Prisma
 import prisma from '@/lib/prisma';
+import { promises as fs } from 'fs';
+import path from 'path';
+import pdfParse from 'pdf-parse';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -13,20 +15,20 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  // Session is now optional, but if a user is logged in, we use their ID.
   const userId = session?.user?.id;
 
   try {
     const formData = await req.formData();
-    const files = formData.getAll('files') as File[]; // Client should send files under the 'files' key
+    const files = formData.getAll('files') as File[];
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files provided' }, { status: 400 });
     }
 
-    const uploadResults: Document[] = []; // Store saved document records from Prisma
+    const uploadResults: any[] = [];
     const uploadErrors: { fileName: string; error: string }[] = [];
 
     for (const file of files) {
@@ -37,17 +39,30 @@ export async function POST(req: Request) {
           const buffer = Buffer.from(bytes);
           const originalFileName = file.name.split('.')[0];
           const fileExtension = file.name.split('.').pop();
-          const cloudinaryFolder = 'documents/anonymous';
 
-          // Upload to Cloudinary
+          // 2. Parse PDF → Text (only if file is pdf)
+          let localTxtPath: string | null = null;
+          if (fileExtension?.toLowerCase() === 'pdf') {
+            const pdfData = await pdfParse(buffer);
+            const extractedText = pdfData.text;
+
+            // Ensure local directory exists
+            const localDir = path.join(process.cwd(), 'uploads');
+            await fs.mkdir(localDir, { recursive: true });
+
+            // Save text file locally
+            localTxtPath = path.join(localDir, `${Date.now()}-${originalFileName}.txt`);
+            await fs.writeFile(localTxtPath, extractedText, 'utf8');
+          }
+
+          // 1. Upload to Cloudinary
           const result: UploadApiResponse = await new Promise((resolve, reject) => {
             cloudinary.uploader
               .upload_stream(
                 {
                   resource_type: 'raw',
-                  folder: cloudinaryFolder,
+                  folder: 'documents/anonymous',
                   public_id: `${Date.now()}-${originalFileName}.${fileExtension}`,
-                  original_filename: file.name,
                   use_filename: true,
                   unique_filename: false,
                   format: fileExtension,
@@ -61,55 +76,51 @@ export async function POST(req: Request) {
               .end(buffer);
           });
 
+          
+
+          // 3. Save record in Prisma
           const documentData: any = {
             fileName: file.name,
             filePath: result.secure_url,
             fileSize: result.bytes,
             fileType: result.format || file.type.split('/')[1] || 'pdf',
+            localPath: localTxtPath, // new field in Prisma schema
           };
 
           if (userId) {
-            documentData.owner = {
-              connect: { id: userId },
-            };
+            documentData.owner = { connect: { id: userId } };
           }
 
-          const savedDocument = await prisma.document.create({
-            data: documentData,
-          });
+          const savedDocument = await prisma.document.create({ data: documentData });
 
-          uploadResults.push(savedDocument); // Now returning the saved document from Prisma
+          uploadResults.push(savedDocument);
         } catch (uploadError: any) {
-          console.error(`Error uploading file ${file.name} to Cloudinary:`, uploadError);
-          const errorMessage = uploadError.message || 'Failed to upload file to Cloudinary';
+          console.error(`Error processing file ${file.name}:`, uploadError);
+          const errorMessage = uploadError.message || 'Failed to process file';
           uploadErrors.push({ fileName: file.name, error: errorMessage });
         }
       }
     }
 
     if (uploadErrors.length > 0 && uploadResults.length === 0) {
-      // All uploads failed
-      return NextResponse.json(
-        { error: 'All file uploads failed', details: uploadErrors },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: 'All file uploads failed', details: uploadErrors }, { status: 500 });
     }
 
-    // Return successful uploads and any errors for partial success
     return NextResponse.json(
       {
-        message:
-          uploadErrors.length > 0 ? 'Some files failed to upload' : 'Files uploaded successfully',
+        message: uploadErrors.length > 0 ? 'Some files failed to upload' : 'Files uploaded successfully',
         data: uploadResults,
         errors: uploadErrors.length > 0 ? uploadErrors : undefined,
       },
       { status: uploadErrors.length > 0 ? 207 : 200 },
-    ); // 207 Multi-Status for partial success
+    );
   } catch (error) {
     console.error('Error in file upload handler:', error);
     return NextResponse.json({ error: 'Failed to process file uploads' }, { status: 500 });
   }
 }
+
+
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
