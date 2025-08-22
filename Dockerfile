@@ -13,12 +13,12 @@ COPY package.json package-lock.json* ./
 # Clear npm cache and install dependencies
 RUN npm cache clean --force
 
-# Install dependencies with proper error handling for Node.js 22
+# Install dependencies without running postinstall scripts (skip prisma generate for now)
 RUN if [ -f package-lock.json ]; then \
-      npm ci --legacy-peer-deps --no-audit --no-fund || \
-      (rm -f package-lock.json && npm install --legacy-peer-deps --no-audit --no-fund); \
+      npm ci --legacy-peer-deps --no-audit --no-fund --ignore-scripts || \
+      (rm -f package-lock.json && npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts); \
     else \
-      npm install --legacy-peer-deps --no-audit --no-fund; \
+      npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts; \
     fi
 
 # Rebuild the source code only when needed
@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
+# Generate Prisma client (now that we have the schema file)
 RUN npx prisma generate
 
 # Build the application
