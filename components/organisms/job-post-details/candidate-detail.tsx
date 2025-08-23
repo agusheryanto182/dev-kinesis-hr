@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CandidateDetailDropdown } from '@/components/organisms/job-post-details/candidate-detail-dropdown';
+// import { CandidateDetailDropdown } from '@/components/organisms/job-post-details/candidate-detail-dropdown';
 
 interface Candidate {
   id: number;
@@ -248,13 +248,12 @@ export function CandidateTable({ candidates, jobRequiredSkills }: CandidateTable
                       <div className="flex items-center space-x-2">
                         <Badge
                           variant="secondary"
-                          className={`text-xs ${
-                            skillsMatch.percentage >= 80
-                              ? 'bg-green-100 text-green-800'
-                              : skillsMatch.percentage >= 60
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-red-100 text-red-800'
-                          }`}
+                          className={`text-xs ${skillsMatch.percentage >= 80
+                            ? 'bg-green-100 text-green-800'
+                            : skillsMatch.percentage >= 60
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                            }`}
                         >
                           {skillsMatch.matching}/{skillsMatch.total} ({skillsMatch.percentage}%)
                         </Badge>
@@ -412,11 +411,11 @@ export function CandidateTable({ candidates, jobRequiredSkills }: CandidateTable
 
       {/* Candidate Detail Modal */}
       {selectedCandidate && (
-        <CandidateDetailDropdown
-          candidate={selectedCandidate}
-          jobRequiredSkills={jobRequiredSkills}
-          onClose={() => setSelectedCandidate(null)}
-        />
+        null
+        // <CandidateDetailDropdown
+        //   candidate={selectedCandidate as unknown as never}
+        //   onClose={() => setSelectedCandidate(null)}
+        // />
       )}
     </>
   );
