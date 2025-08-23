@@ -52,6 +52,7 @@ const AnalyzingAnimation = () => (
 export const GetCandidatesTableColumns = (
   onDelete: () => void,
   onEditApplication?: (data: ApplicationTableData) => void,
+  onClickDetail?: (data: CandidateData) => void
 ): ColumnDef<CandidateData>[] => {
   const handleDelete = async (id: number) => {
     try {
@@ -93,12 +94,12 @@ export const GetCandidatesTableColumns = (
       header: ({ column }) => <DataTableColumnHeader column={column} title="Candidate" />,
       cell: ({ row }) => (
         <>
-          <Link
-            href={`/hiring/candidates/${row.original.applicantId}`}
+          <div
+            onClick={() => onClickDetail?.(row.original)}
             className="font-medium hover:underline cursor-pointer hover:text-blue-500"
           >
             {row.original.fullName}
-          </Link>
+          </div>
           <div
             className="text-muted-foreground hover:underline cursor-pointer"
             onClick={() => {

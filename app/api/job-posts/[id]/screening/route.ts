@@ -16,7 +16,7 @@ Rules:
 - Distinguish core skills vs tools. Tools like GitHub, Jira, Trello must not be counted as missing skills.
 - Focus only on hard skills and soft skills relevant to the job description.
 - Calculate the match percentage based only on required and nice-to-have skills.
-- Clearly separate missing skills and matching skills.
+- Clearly separate missing skills that are not in the candidate's resume but are in the job description.
 - Recommendations must be actionable and natural additions to the resume.
 
 Job Description:
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const prompt = genPrompt(jobPost.description, cvText, custom_requirement);
 
         const result = await geminiAI.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-1.5-flash',
           contents: prompt,
           config: {
             temperature: 0,

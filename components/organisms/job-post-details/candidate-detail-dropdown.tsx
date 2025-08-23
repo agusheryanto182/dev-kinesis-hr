@@ -2,102 +2,54 @@
 import {
   CheckCircle,
   XCircle,
-  Eye,
-  Download,
   User,
   MapPin,
   GraduationCap,
   Languages,
   Award,
-  Github,
   Linkedin,
+  Github,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ResumeViewer } from '@/components/organisms/job-post-details/resume-viewer';
-import { useState } from 'react';
+// import { ResumeViewer } from '@/components/organisms/job-post-details/resume-viewer';
+import { ApplicantResponseDTO } from '@/types/applicant';
+import { Screening } from '@/types/job-post';
 
-interface Candidate {
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string;
-  resume: string;
-  appliedDate: string;
-  status: string;
-  score: number;
-  experienceLevel: string;
-  location: string;
-  skills: string[];
-  highlightedSkills: string[];
-  yearsOfExperience: number;
-  currentSalary: number;
-  expectedSalary: number;
-  summary: string;
-  education: string;
-  religion: string;
-  nationality: string;
-  languages: string[];
-  certifications: string[];
-  githubProfile: string;
-  linkedinProfile: string;
-}
 
 interface CandidateDetailDropdownProps {
-  candidate: Candidate;
-  jobRequiredSkills: string[];
+  candidate: ApplicantResponseDTO & {
+    screening?: Screening
+  };
   onClose: () => void;
 }
 
 export function CandidateDetailDropdown({
   candidate,
-  jobRequiredSkills,
   onClose,
 }: CandidateDetailDropdownProps) {
-  const [showResume, setShowResume] = useState(false);
 
-  const matchingSkills = candidate.skills.filter((skill) => jobRequiredSkills.includes(skill));
+  const matchingSkills = candidate.screening?.accurateKeywords
 
-  const missingSkills = jobRequiredSkills.filter((skill) => !candidate.skills.includes(skill));
+  const missingSkills = candidate.screening?.missingKeywords
 
-  const additionalSkills = candidate.skills.filter((skill) => !jobRequiredSkills.includes(skill));
+  // const additionalSkills = candidate.screening?.finalThoughts
 
-  const formatSalary = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const getMatchPercentage = () => {
-    return Math.round((matchingSkills.length / jobRequiredSkills.length) * 100);
+    return candidate.screening?.matchPercentage
   };
 
-  if (showResume) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
-          <ResumeViewer
-            candidateName={candidate.fullName}
-            resumeFile={candidate.resume}
-            onClose={() => setShowResume(false)}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-zinc-400 bg-opacity-50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        className="bg-white py-5 px-2 rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <CardHeader className="border-b">
@@ -112,19 +64,7 @@ export function CandidateDetailDropdown({
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowResume(true)}
-                className="flex items-center space-x-2"
-              >
-                <Eye className="h-4 w-4" />
-                <span>View Resume</span>
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>Download CV</span>
-              </Button>
+
               <Button variant="ghost" size="sm" onClick={onClose}>
                 ✕
               </Button>
@@ -151,11 +91,11 @@ export function CandidateDetailDropdown({
                     <h4 className="flex items-center space-x-2 mb-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
                       <span className="font-medium text-green-800">
-                        Matching Skills ({matchingSkills.length})
+                        Matching Skills ({matchingSkills?.length})
                       </span>
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {matchingSkills.map((skill) => (
+                      {matchingSkills?.map((skill) => (
                         <Badge key={skill} className="bg-green-100 text-green-800">
                           {skill}
                         </Badge>
@@ -164,16 +104,16 @@ export function CandidateDetailDropdown({
                   </div>
 
                   {/* Missing Skills */}
-                  {missingSkills.length > 0 && (
+                  {(missingSkills?.length || 0) > 0 && (
                     <div>
                       <h4 className="flex items-center space-x-2 mb-2">
                         <XCircle className="h-4 w-4 text-red-600" />
                         <span className="font-medium text-red-800">
-                          Missing Skills ({missingSkills.length})
+                          Missing Skills ({missingSkills?.length})
                         </span>
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {missingSkills.map((skill) => (
+                        {missingSkills?.map((skill) => (
                           <Badge key={skill} className="bg-red-100 text-red-800">
                             {skill}
                           </Badge>
@@ -183,23 +123,23 @@ export function CandidateDetailDropdown({
                   )}
 
                   {/* Additional Skills */}
-                  {additionalSkills.length > 0 && (
+                  {/* {(additionalSkills?.length || 0) > 0 && (
                     <div>
                       <h4 className="flex items-center space-x-2 mb-2">
                         <Award className="h-4 w-4 text-blue-600" />
                         <span className="font-medium text-blue-800">
-                          Additional Skills ({additionalSkills.length})
+                          Additional Skills ({additionalSkills?.length})
                         </span>
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {additionalSkills.map((skill) => (
+                        {additionalSkills?.map((skill) => (
                           <Badge key={skill} className="bg-blue-100 text-blue-800">
                             {skill}
                           </Badge>
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
                 </CardContent>
               </Card>
 
@@ -208,15 +148,17 @@ export function CandidateDetailDropdown({
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Award className="h-5 w-5" />
-                    <span>Certifications</span>
+                    <span>Experience</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {candidate.certifications.map((cert, index) => (
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {(candidate.experience as any[]).map((exp: { company: string, role: string }, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <div className="h-2 w-2 bg-blue-600 rounded-full"></div>
-                        <span className="text-sm">{cert}</span>
+                        <span className="text-sm">{exp.company}</span>
+                        <span className="text-sm">{exp.role}</span>
                       </div>
                     ))}
                   </div>
@@ -233,21 +175,18 @@ export function CandidateDetailDropdown({
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Experience Level</p>
-                      <p className="font-medium capitalize">{candidate.experienceLevel}</p>
-                    </div>
-                    <div>
                       <p className="text-sm text-gray-600">Years of Experience</p>
-                      <p className="font-medium">{candidate.yearsOfExperience} years</p>
+                      <p className="font-medium">{candidate.yearOfExperience} years</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Religion</p>
-                      <p className="font-medium">{candidate.religion}</p>
+                      <p className="text-sm text-gray-600">Phone Number</p>
+                      <p className="font-medium">{candidate.phone}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Nationality</p>
-                      <p className="font-medium">{candidate.nationality}</p>
+                      <p className="text-sm text-gray-600">Email</p>
+                      <p className="font-medium">{candidate.email}</p>
                     </div>
+
                   </div>
 
                   <Separator />
@@ -265,7 +204,13 @@ export function CandidateDetailDropdown({
                       <GraduationCap className="h-4 w-4 text-gray-400" />
                       <p className="text-sm text-gray-600">Education</p>
                     </div>
-                    <p className="font-medium">{candidate.education}</p>
+                    {
+
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (candidate.education as any[]).map((ed: { major: string, institution: string }, index) => (
+                        <p className="font-medium" key={index}>{ed.major} - {ed.institution}</p>
+                      ))
+                    }
                   </div>
 
                   <div>
@@ -274,7 +219,7 @@ export function CandidateDetailDropdown({
                       <p className="text-sm text-gray-600">Languages</p>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {candidate.languages.map((lang) => (
+                      {(candidate.languages as string[]).map((lang) => (
                         <Badge key={lang} variant="outline" className="text-xs">
                           {lang}
                         </Badge>
@@ -290,30 +235,12 @@ export function CandidateDetailDropdown({
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <p className="text-sm text-gray-600">Current Salary</p>
-                    <p className="font-medium">{formatSalary(candidate.currentSalary)}</p>
-                  </div>
-                  <div>
                     <p className="text-sm text-gray-600">Expected Salary</p>
                     <p className="font-medium text-green-600">
-                      {formatSalary(candidate.expectedSalary)}
+                      {candidate.applications?.[0].expectedSalary}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Salary Increase</p>
-                    <p className="font-medium">
-                      {formatSalary(candidate.expectedSalary - candidate.currentSalary)}
-                      <span className="text-sm text-gray-500 ml-1">
-                        (
-                        {Math.round(
-                          ((candidate.expectedSalary - candidate.currentSalary) /
-                            candidate.currentSalary) *
-                            100,
-                        )}
-                        %)
-                      </span>
-                    </p>
-                  </div>
+
                 </CardContent>
               </Card>
 
@@ -322,14 +249,28 @@ export function CandidateDetailDropdown({
                   <CardTitle>Profiles</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Github className="h-4 w-4 mr-2" />
-                    GitHub Profile
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <Linkedin className="h-4 w-4 mr-2" />
-                    LinkedIn Profile
-                  </Button>
+                  {
+                    candidate.profileLinks.map((profile, index) => (
+                      <div key={index}>
+                        <Button variant="outline" size="sm" className="w-full justify-start">
+                          <a href={profile} target="_blank" rel="noopener noreferrer" className='text-blue-400 flex space-x-2'>
+                            {
+                              profile.includes("linkedin") ? (
+                                <>
+                                  <Linkedin /> <span className='ml-2'>LinkedIn</span>
+                                </>
+                              ) : profile.includes("github") && (
+                                <>
+                                  <Github /> <span className='ml-2'>Github</span>
+                                </>
+                              )
+                            }
+                          </a>
+                        </Button>
+                      </div>
+                    ))
+                  }
+
                 </CardContent>
               </Card>
             </div>
@@ -341,7 +282,7 @@ export function CandidateDetailDropdown({
               <CardTitle>Professional Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 leading-relaxed">{candidate.summary}</p>
+              <p className="text-gray-700 leading-relaxed">{candidate.summary == 'null' || candidate.summary == null ? '-' : '-'}</p>
             </CardContent>
           </Card>
         </CardContent>

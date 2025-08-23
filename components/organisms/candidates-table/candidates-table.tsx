@@ -7,8 +7,12 @@ import { DataTable } from '@/components/organisms/data-table/data-table';
 import { ApplicationResponseDTO } from '@/types/application';
 import { UpdateApplicationModal } from '../update-application-modal';
 import { ApplicationTableData } from '../application-table/application-table';
+import { CandidateDetailDropdown } from '../job-post-details/candidate-detail-dropdown';
+import { Screening } from '@/types/job-post';
 
-type CandidateData = ApplicantResponseDTO;
+type CandidateData = ApplicantResponseDTO & {
+  screening?: Screening
+};
 interface CandidatesTableProps {
   data: CandidateData[];
   onDelete: () => void;
@@ -26,6 +30,7 @@ export function CandidatesTable({
   const [selectedApplication, setSelectedApplication] = React.useState<ApplicationTableData | null>(
     null,
   );
+  const [selected, setSelected] = React.useState<CandidateData | null>()
 
   const handleEditApplication = (data: ApplicationTableData) => {
     setSelectedApplication(data);
@@ -37,7 +42,11 @@ export function CandidatesTable({
     setSelectedApplication(null);
   };
 
-  const columns = GetCandidatesTableColumns(onDelete, handleEditApplication);
+  const handleClickDetail = (data: CandidateData) => {
+    setSelected(data)
+  }
+
+  const columns = GetCandidatesTableColumns(onDelete, handleEditApplication, handleClickDetail);
 
   return (
     <>
@@ -49,6 +58,11 @@ export function CandidatesTable({
         application={selectedApplication as unknown as ApplicationResponseDTO}
         onClose={handleCloseModal}
       />
+      {
+        selected && (
+          <CandidateDetailDropdown candidate={selected} onClose={() => setSelected(null)} />
+        )
+      }
     </>
   );
 }
