@@ -58,6 +58,7 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
     customFilters: {} as Record<string, string>,
   });
   const [hasScreening, setHasScreening] = React.useState(false);
+  const [screeningInProgress, setScreeningInProgress] = React.useState(false);
 
   // Helper function to check if filters are active
   const hasActiveFilters = () => {
@@ -102,36 +103,85 @@ export function JobDetailClient({ initialData }: JobDetailClientProps) {
   };
 
   const handleScreening = async (applicationId: number, customRequirement?: string) => {
-    const result = await screeningRepository.screening(
-      applicationId,
-      jobPostsData.id,
-      customRequirement,
-    );
-    if (result?.success && result.data) {
-      const screeningData = result.data;
-      if (
-        typeof screeningData.matchPercentage === 'number' &&
-        Array.isArray(screeningData.accurateKeywords) &&
-        Array.isArray(screeningData.missingKeywords)
-      ) {
-        const updatedApplications = jobPostsData.applications?.map((app) =>
-          app.id === applicationId ? { ...app, screening: screeningData } : app,
-        );
-        setJobPostsData({ ...jobPostsData, applications: updatedApplications });
+    try {
+      const result = await screeningRepository.screening(
+        applicationId,
+        jobPostsData.id,
+        customRequirement,
+      );
+      if (result?.success && result.data) {
+        const screeningData = result.data;
+        if (
+          typeof screeningData.matchPercentage === 'number' &&
+          Array.isArray(screeningData.accurateKeywords) &&
+          Array.isArray(screeningData.missingKeywords)
+        ) {
+          // Update state using functional update to avoid stale state
+          setJobPostsData((prevData) => ({
+            ...prevData,
+            applications: prevData.applications?.map((app) =>
+              app.id === applicationId ? { ...app, screening: screeningData } : app,
+            ),
+          }));
+          return { success: true };
+        } else {
+          console.error('Invalid screening data structure:', screeningData);
+          return { success: false, error: 'Invalid data structure' };
+        }
       } else {
-        console.error('Invalid screening data structure:', screeningData);
+        console.error('Screening failed for application:', applicationId);
+        return { success: false, error: 'API call failed' };
       }
+    } catch (error) {
+      console.error('Error during screening:', error);
+      return { success: false, error: error };
     }
   };
 
-  React.useEffect(() => {
-    if (jobPostsData?.applications && !hasScreening) {
-      setHasScreening(true);
-      for (const application of jobPostsData.applications) {
-        handleScreening(application.id);
+  // Function to run screening for all applications
+  const runInitialScreening = async () => {
+    if (!jobPostsData?.applications || screeningInProgress || hasScreening) return;
+
+    setScreeningInProgress(true);
+    console.log('Starting initial screening for', jobPostsData.applications.length, 'applications');
+
+    try {
+      // Process applications in smaller batches to avoid overwhelming the API
+      const batchSize = 3;
+      const applications = jobPostsData.applications;
+
+      for (let i = 0; i < applications.length; i += batchSize) {
+        const batch = applications.slice(i, i + batchSize);
+
+        // Run screening for each application in the batch concurrently
+        const promises = batch.map(app =>
+          handleScreening(app.id).catch(error => {
+            console.error(`Failed to screen application ${app.id}:`, error);
+            return { success: false, error };
+          })
+        );
+
+        await Promise.all(promises);
+
+        // Small delay between batches to be API-friendly
+        if (i + batchSize < applications.length) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       }
+
+      setHasScreening(true);
+      console.log('Initial screening completed');
+    } catch (error) {
+      console.error('Error during initial screening:', error);
+    } finally {
+      setScreeningInProgress(false);
     }
-  }, []);
+  };
+
+  // Run initial screening when component mounts or when jobPostsData changes
+  React.useEffect(() => {
+    runInitialScreening();
+  }, [jobPostsData?.id]); // Depend on jobPostsData.id to re-run when job changes
 
   return (
     <>
